@@ -1,0 +1,12 @@
+# Dependencias y archivos de herramientas
+node_modules/
+dist/
+.DS_Store
+
+# No subir secretos locales. Los dos archivos de entorno versionados son públicos
+# y solo contienen URLs de API, nunca claves, tokens ni contraseñas.
+.env
+.env.local
+.env.*.local
+!.env.development
+!.env.production
