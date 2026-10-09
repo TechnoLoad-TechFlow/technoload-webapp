@@ -1,48 +1,17 @@
 const KEY = 'technoload-webapp-v2';
-const AUTH_KEY = 'technoload-session';
-const USERS_KEY = 'technoload-users';
-
-const defaultUsers = [
-  { id:'U-001', name:'Flor Álvarez', email:'admin@technoload.pe', password:'admin123', role:'Fleet Administrator', company:'TechnoLoad Corp' },
-  { id:'U-002', name:'Mathias Castillo', email:'mathias@technoload.pe', password:'mathias123', role:'Fleet Administrator', company:'TechnoLoad Corp' },
-  { id:'U-003', name:'Marco López', email:'operaciones@technoload.pe', password:'operaciones123', role:'Operations Coordinator', company:'TransAndina Logística' },
-  { id:'U-004', name:'Renzo Huamán', email:'contratista@technoload.pe', password:'contratista123', role:'Contractor', company:'Constructora del Sur' }
-];
-
-let users = JSON.parse(localStorage.getItem(USERS_KEY) || 'null');
-if (!users || !Array.isArray(users) || users.length === 0) {
-  users = structuredClone(defaultUsers);
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-const saveUsers = () => localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-let session = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
-
-// Check URL hash for auth token passed across origins
-if (location.hash.includes('auth=')) {
-  try {
-    const rawHash = location.hash.slice(1);
-    const params = new URLSearchParams(rawHash);
-    const authData = params.get('auth');
-    if (authData) {
-      session = JSON.parse(decodeURIComponent(authData));
-      localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-      if (session.user && !users.some(u => u.email.toLowerCase() === session.user.email.toLowerCase())) {
-        users.push(session.user);
-        saveUsers();
-      }
-      const targetView = params.get('view') || 'dashboard';
-      location.hash = targetView;
-    }
-  } catch (err) {
-    console.error('Failed to parse auth token:', err);
-  }
-}
-
+const AUTH_KEY = 'technoload-server-session';
+const API_BASE = window.TechnoLoadConfig?.apiBaseUrl || 'https://technoload-platform-u202410728-e3hpgzdgf7g5daaq.westus-01.azurewebsites.net/api/v1';
+let session = JSON.parse(sessionStorage.getItem(AUTH_KEY) || 'null');
 const saveSession = () => {
-  if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-  else localStorage.removeItem(AUTH_KEY);
+  if (session) sessionStorage.setItem(AUTH_KEY, JSON.stringify(session));
+  else sessionStorage.removeItem(AUTH_KEY);
 };
+async function serverAuth(path, payload) {
+  const response = await fetch(`${API_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'The server could not complete the request.');
+  return result;
+}
 
 const seed = {
   assets: [
@@ -107,7 +76,7 @@ function authView() {
           <div class="form-group">
             <label for="login-password">Password</label>
             <div class="form-input-wrap">
-              <input id="login-password" type="password" required placeholder="••••••••" value="admin123" autocomplete="current-password">
+              <input id="login-password" type="password" required placeholder="••••••••" value="Admin123!" autocomplete="current-password">
             </div>
           </div>
           <button class="button primary" style="width:100%;margin-top:6px;" type="submit">Sign in to platform</button>
@@ -116,10 +85,8 @@ function authView() {
         <div class="demo-box">
           <div class="demo-box-header">⚡ Quick demo access:</div>
           <div class="demo-chips">
-            <button type="button" class="demo-chip" data-fill-email="admin@technoload.pe" data-fill-pass="admin123">Flor Álvarez (Admin)</button>
-            <button type="button" class="demo-chip" data-fill-email="mathias@technoload.pe" data-fill-pass="mathias123">Mathias Castillo (Admin)</button>
-            <button type="button" class="demo-chip" data-fill-email="operaciones@technoload.pe" data-fill-pass="operaciones123">Marco López (Ops)</button>
-            <button type="button" class="demo-chip" data-fill-email="contratista@technoload.pe" data-fill-pass="contratista123">Renzo Huamán (Contractor)</button>
+            <button type="button" class="demo-chip" data-fill-email="admin@technoload.pe" data-fill-pass="Admin123!">Administrator</button>
+            <button type="button" class="demo-chip" data-fill-email="user@technoload.pe" data-fill-pass="User123!">Customer</button>
           </div>
         </div>
 
@@ -305,6 +272,7 @@ document.addEventListener('click', event => {
 
   // Logout action
   if (button.dataset.action === 'logout') {
+    if (session?.token) fetch(`${API_BASE}/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${session.token}` } }).catch(() => {});
     session = null;
     saveSession();
     authError = '';
@@ -384,19 +352,18 @@ document.addEventListener('submit', event => {
     const email = document.querySelector('#login-email').value.trim().toLowerCase();
     const pass = document.querySelector('#login-password').value;
 
-    const matched = users.find(u => u.email.toLowerCase() === email && u.password === pass);
-    if (matched) {
-      session = { user: matched, token: 'jwt-' + Date.now(), loggedInAt: Date.now() };
+    serverAuth('/auth/login', { email, password: pass }).then(result => {
+      session = result;
       saveSession();
       authError = '';
       view = redirectAfterLogin || 'dashboard';
       redirectAfterLogin = null;
       render();
-      toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Bienvenido(a), ${matched.name}!` : `Welcome back, ${matched.name}!`);
-    } else {
-      authError = window.TechnoLoadI18n?.language() === 'es' ? 'Correo o contraseña incorrectos.' : 'Invalid email or password.';
+      toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Bienvenido(a), ${result.user.name}!` : `Welcome back, ${result.user.name}!`);
+    }).catch(error => {
+      authError = error.message;
       render();
-    }
+    });
     return;
   }
 
@@ -425,30 +392,15 @@ document.addEventListener('submit', event => {
       render();
       return;
     }
-    if (users.some(u => u.email.toLowerCase() === email)) {
-      authError = window.TechnoLoadI18n?.language() === 'es' ? 'Este correo ya se encuentra registrado.' : 'This email is already registered.';
+    serverAuth('/auth/register', { name, email, password: pass, organization: company, requestedRole: role }).then(result => {
+      session = result;
+      saveSession();
+      authError = '';
+      view = redirectAfterLogin || 'dashboard';
+      redirectAfterLogin = null;
       render();
-      return;
-    }
-
-    const newUser = {
-      id: `U-${Date.now().toString().slice(-4)}`,
-      name,
-      email,
-      password: pass,
-      role,
-      company: company || 'TechnoLoad'
-    };
-    users.push(newUser);
-    saveUsers();
-
-    session = { user: newUser, token: 'jwt-' + Date.now(), loggedInAt: Date.now() };
-    saveSession();
-    authError = '';
-    view = redirectAfterLogin || 'dashboard';
-    redirectAfterLogin = null;
-    render();
-    toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Cuenta creada exitosamente! Bienvenido(a), ${newUser.name}` : `Account created successfully! Welcome, ${newUser.name}`);
+      toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Cuenta creada exitosamente! Bienvenido(a), ${result.user.name}` : `Account created successfully! Welcome, ${result.user.name}`);
+    }).catch(error => { authError = error.message; render(); });
     return;
   }
 });
