@@ -12,6 +12,12 @@ async function serverAuth(path, payload) {
   if (!response.ok) throw new Error(result.error || 'The server could not complete the request.');
   return result;
 }
+async function api(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.token}`, ...(options.headers || {}) } });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || 'Request failed.');
+  return result;
+}
 
 const seed = {
   assets: [
@@ -128,7 +134,7 @@ function authView() {
           <div class="form-group">
             <label for="reg-pass">Password</label>
             <div class="form-input-wrap">
-              <input id="reg-pass" type="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password">
+              <input id="reg-pass" type="password" minlength="8" required placeholder="At least 8 characters" autocomplete="new-password">
             </div>
           </div>
           <div class="form-group">
@@ -150,7 +156,8 @@ function authView() {
 }
 
 function shell(title, content) {
-  const nav = [['dashboard','▦','Dashboard'],['fleet','🚜','Fleet'],['rentals','▣','Rentals'],['maintenance','⚒','Maintenance'],['operations','⌖','Operations'],['memberships','★','Memberships']];
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const nav = isAdmin ? [['dashboard','▦','Dashboard'],['fleet','🚜','Fleet'],['rentals','▣','Requests'],['maintenance','⚒','Maintenance'],['operations','⌖','Operations'],['admin','⚙','Approvals']] : [['catalog','🚜','Machinery catalog'],['memberships','★','Memberships'],['orders','▣','My reservations'],['notifications','🔔','Notifications']];
   const languageButton = window.TechnoLoadI18n?.language() === 'es' ? 'EN' : 'ES';
   const currentUser = session?.user || { name: 'Flor Álvarez', role: 'Fleet Administrator', company: 'TechnoLoad Corp' };
   const initials = (currentUser.name || 'TL').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
@@ -172,7 +179,7 @@ function shell(title, content) {
             <span class="user-avatar">${initials}</span>
             <div class="user-info">
               <b class="user-name">${currentUser.name}</b>
-              <small class="user-role">${currentUser.role}</small>
+              <small class="user-role">${isAdmin ? 'Administrator' : 'Customer'}</small>
             </div>
           </div>
           <button class="logout-btn button" data-action="logout" title="Sign out" aria-label="Sign out">
@@ -186,6 +193,15 @@ function shell(title, content) {
     </main>
   </div>`;
 }
+
+function customerCatalog() {
+  const assets = state.assets.filter(item => item.status === 'AVAILABLE');
+  return shell('Machinery catalog', `<div class="head"><div><h1>Choose equipment for your project</h1><p>Set your dates. Eligible requests are approved automatically and placed on reserve.</p></div></div><div class="grid">${assets.map(item => `<article class="asset"><header><h3>${item.type === 'Crane' ? '🏗️' : item.type === 'Dump truck' ? '🚚' : '🚜'} ${item.name}</h3><span class="tag AVAILABLE">Available</span></header><p>${item.type}<br>Operational use: <b>${Number(item.usage).toLocaleString('en-US')}</b></p><form class="rental-form" data-asset="${item.id}"><label>Start date<input name="startDate" type="date" required></label><label>End date<input name="endDate" type="date" required></label><button class="primary" type="submit">Reserve equipment</button></form></article>`).join('') || '<p class="empty">No machinery is currently available.</p>'}</div>`);
+}
+function customerOrders() { return shell('My reservations', `<div class="head"><div><h1>Reservations and delivery</h1><p>Your requests and delivery priority update automatically.</p></div></div><section class="panel"><h2>Loading your current requests…</h2></section>`); }
+function customerNotifications() { return shell('Notifications', `<div class="head"><div><h1>Notifications</h1><p>Maintenance, reservation and new-product updates appear here.</p></div><button data-action="read-notifications">Mark all read</button></div><section class="panel"><h2>Loading notifications…</h2></section>`); }
+function customerMemberships() { const plans = [['starter','Starter','S/ 149','Standard delivery · 5% rental discount'],['professional','Professional','S/ 349','Priority delivery · 12% rental discount · priority support']]; return shell('Memberships', `<div class="head"><div><h1>Plans with delivery advantages</h1><p>Checkout uses a safe sandbox: no real charge is made.</p></div></div><div class="grid">${plans.map(([id,name,price,benefit]) => `<article class="asset"><header><h3>${name}</h3><span class="tag AVAILABLE">Member benefits</span></header><p><b style="font-size:1.5rem">${price}/month</b><br>${benefit}</p><footer><button class="primary" data-checkout="${id}" data-method="CARD">Pay by test card</button><button data-checkout="${id}" data-method="YAPE">Yape sandbox</button></footer></article>`).join('')}</div>`); }
+async function admin() { app.innerHTML = shell('Approvals', '<div class="head"><div><h1>Approvals</h1><p>Loading reservations and incidents…</p></div></div>'); try { const data = await api('/admin/requests'); app.innerHTML = shell('Approvals', `<div class="head"><div><h1>Automated approvals</h1><p>Eligible reservations are already reserved; review exceptions below.</p></div></div><section class="panel"><h2>Rental requests</h2><table><thead><tr><th>Request</th><th>Asset</th><th>Dates</th><th>Status</th><th>Decision</th></tr></thead><tbody>${data.rentals.map(r => `<tr><td>${r.id}</td><td>${r.assetId}</td><td>${r.startDate} → ${r.endDate}</td><td>${r.status}</td><td>${r.status === 'PENDING_REVIEW' ? `<button class="primary" data-approve-rental="${r.id}">Approve</button>` : 'Automatic'}</td></tr>`).join('') || '<tr><td colspan="5">No requests yet.</td></tr>'}</tbody></table></section><section class="panel"><h2>Equipment incidents</h2><table><tbody>${data.incidents.map(i => `<tr><td>${i.assetId}</td><td>${i.description}</td><td>${i.status}</td></tr>`).join('') || '<tr><td>No incidents.</td></tr>'}</tbody></table></section>`); } catch (error) { toast(error.message); } }
 
 function dashboard() {
   const available = state.assets.filter(item => item.status === 'AVAILABLE').length;
@@ -221,7 +237,9 @@ function render() {
     redirectAfterLogin = null;
   }
   location.hash = view;
-  const page = {fleet, rentals, maintenance, operations, memberships}[view] || dashboard;
+  if (session.user.role !== 'ADMIN') { const page = {catalog: customerCatalog, memberships: customerMemberships, orders: customerOrders, notifications: customerNotifications}[view] || customerCatalog; app.innerHTML = page(); window.TechnoLoadI18n?.translate(document); return; }
+  if (view === 'admin') return admin();
+  const page = {fleet, rentals, maintenance, operations}[view] || dashboard;
   app.innerHTML = page();
   window.TechnoLoadI18n?.translate(document);
 }
@@ -343,9 +361,17 @@ document.addEventListener('click', event => {
     render();
     toast(`${state.membership} membership is now active.`);
   }
+  if (button.dataset.checkout) api('/subscriptions/checkout', { method: 'POST', body: JSON.stringify({ planId: button.dataset.checkout, method: button.dataset.method }) }).then(() => { toast('Sandbox payment accepted. Membership active.'); view = 'orders'; render(); }).catch(error => toast(error.message));
+  if (button.dataset.approveRental) api(`/admin/rentals/${button.dataset.approveRental}/decision`, { method: 'POST', body: JSON.stringify({ approved: true }) }).then(() => { toast('Reservation approved and customer notified.'); render(); }).catch(error => toast(error.message));
+  if (button.dataset.action === 'read-notifications') api('/notifications/read', { method: 'POST' }).then(() => toast('Notifications marked as read.'));
 });
 
 document.addEventListener('submit', event => {
+  if (event.target.classList.contains('rental-form')) {
+    event.preventDefault(); const data = new FormData(event.target);
+    api('/rentals', { method: 'POST', body: JSON.stringify({ assetId: event.target.dataset.asset, startDate: data.get('startDate'), endDate: data.get('endDate') }) }).then(rental => { toast(rental.status === 'AUTO_APPROVED' ? 'Approved automatically — equipment reserved.' : 'Request sent for review.'); view = 'orders'; render(); }).catch(error => toast(error.message));
+    return;
+  }
   // Login Form Submission
   if (event.target.id === 'login-form') {
     event.preventDefault();
@@ -356,7 +382,7 @@ document.addEventListener('submit', event => {
       session = result;
       saveSession();
       authError = '';
-      view = redirectAfterLogin || 'dashboard';
+      view = redirectAfterLogin || (result.user.role === 'ADMIN' ? 'dashboard' : 'catalog');
       redirectAfterLogin = null;
       render();
       toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Bienvenido(a), ${result.user.name}!` : `Welcome back, ${result.user.name}!`);
@@ -382,8 +408,8 @@ document.addEventListener('submit', event => {
       render();
       return;
     }
-    if (pass.length < 6) {
-      authError = window.TechnoLoadI18n?.language() === 'es' ? 'La contraseña debe tener al menos 6 caracteres.' : 'Password must be at least 6 characters.';
+    if (pass.length < 8) {
+      authError = window.TechnoLoadI18n?.language() === 'es' ? 'La contraseña debe tener al menos 8 caracteres.' : 'Password must be at least 8 characters.';
       render();
       return;
     }
@@ -396,7 +422,7 @@ document.addEventListener('submit', event => {
       session = result;
       saveSession();
       authError = '';
-      view = redirectAfterLogin || 'dashboard';
+      view = redirectAfterLogin || 'catalog';
       redirectAfterLogin = null;
       render();
       toast(window.TechnoLoadI18n?.language() === 'es' ? `¡Cuenta creada exitosamente! Bienvenido(a), ${result.user.name}` : `Account created successfully! Welcome, ${result.user.name}`);
