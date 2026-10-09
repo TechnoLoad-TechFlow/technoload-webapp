@@ -1,6 +1,7 @@
 # Dependencias y archivos de herramientas
 node_modules/
 dist/
+.angular/
 .DS_Store
 
 # No subir secretos locales. Los dos archivos de entorno versionados son públicos
