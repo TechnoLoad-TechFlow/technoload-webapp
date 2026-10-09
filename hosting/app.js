@@ -9,7 +9,7 @@ const saveSession = () => {
 async function serverAuth(path, payload) {
   const response = await fetch(`${API_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || 'The server could not complete the request.');
+  if (!response.ok) throw new Error(result.message || result.error || 'The server could not complete the request.');
   return result;
 }
 async function api(path, options = {}) {
@@ -182,6 +182,7 @@ function shell(title, content) {
               <small class="user-role">${isAdmin ? 'Administrator' : 'Customer'}</small>
             </div>
           </div>
+          ${!isAdmin ? '<button class="button ghost" data-view="notifications" title="Notifications">🔔</button>' : ''}
           <button class="logout-btn button" data-action="logout" title="Sign out" aria-label="Sign out">
             <span aria-hidden="true">⎋</span>
             <span>Sign out</span>
@@ -237,7 +238,7 @@ function render() {
     redirectAfterLogin = null;
   }
   location.hash = view;
-  if (session.user.role !== 'ADMIN') { const page = {catalog: customerCatalog, memberships: customerMemberships, orders: customerOrders, notifications: customerNotifications}[view] || customerCatalog; app.innerHTML = page(); window.TechnoLoadI18n?.translate(document); return; }
+  if (session.user.role !== 'ADMIN') { const page = {catalog: customerCatalog, memberships: customerMemberships, orders: customerOrders, notifications: customerNotifications}[view] || customerCatalog; app.innerHTML = page(); if (view === 'orders' || view === 'notifications') api('/customer/overview').then(data => { const panel = app.querySelector('.panel'); if (!panel) return; panel.innerHTML = view === 'orders' ? `<h2>Your requests</h2><table><tbody>${data.rentals.map(r => `<tr><td>${r.assetId}</td><td>${r.startDate} → ${r.endDate}</td><td>${r.status}</td></tr>`).join('') || '<tr><td>No reservations yet.</td></tr>'}</tbody></table>` : `<h2>Latest updates</h2><table><tbody>${data.notifications.map(n => `<tr><td>${n.type}</td><td>${n.title}</td><td>${n.message}</td></tr>`).join('') || '<tr><td>No notifications yet.</td></tr>'}</tbody></table>`; }).catch(error => toast(error.message)); window.TechnoLoadI18n?.translate(document); return; }
   if (view === 'admin') return admin();
   const page = {fleet, rentals, maintenance, operations}[view] || dashboard;
   app.innerHTML = page();
