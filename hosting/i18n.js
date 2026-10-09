@@ -20,7 +20,15 @@
     'Close': 'Cerrar', 'e.g. Volvo FH Truck': 'ej. Camión Volvo FH', 'Corrective': 'Correctivo', 'Preventive': 'Preventivo', 'Demo data restored.': 'Datos de demostración restablecidos.',
     'Maintenance scheduled.': 'Mantenimiento programado.', 'There are no available assets.': 'No hay activos disponibles.', 'Dispatch created and asset reserved.': 'Despacho creado y activo reservado.',
     'Rental request approved.': 'Solicitud de alquiler aprobada.', 'Rental request created.': 'Solicitud de alquiler creada.', 'Asset removed.': 'Activo eliminado.', 'Maintenance completed.': 'Mantenimiento completado.',
-    'Route started.': 'Ruta iniciada.', 'Asset registered.': 'Activo registrado.', 'Asset updated.': 'Activo actualizado.'
+    'Route started.': 'Ruta iniciada.', 'Asset registered.': 'Activo registrado.', 'Asset updated.': 'Activo actualizado.',
+    'Sign in': 'Iniciar sesión', 'Create account': 'Crear cuenta', 'Sign in to platform': 'Ingresar a la plataforma', 'Create account and enter': 'Crear cuenta y entrar',
+    'Corporate email': 'Correo corporativo', 'Password': 'Contraseña', 'Confirm password': 'Confirmar contraseña', 'Full name': 'Nombre completo', 'Company': 'Empresa', 'Operational role': 'Rol operativo',
+    'Fleet Administrator': 'Administrador de flota', 'Operations Coordinator': 'Coordinador de operaciones', 'Maintenance Technician': 'Técnico de mantenimiento', 'Contractor': 'Contratista',
+    'Log out': 'Cerrar sesión', 'Sign out': 'Cerrar sesión', 'Quick demo access': 'Acceso demo rápido',
+    'Do not have an account? Register here': '¿No tienes cuenta? Regístrate aquí', 'Already have an account? Sign in': '¿Ya tienes una cuenta? Inicia sesión',
+    'Back to website': 'Volver al sitio web', 'Signed out successfully.': 'Sesión cerrada correctamente.', 'Invalid email or password.': 'Correo o contraseña incorrectos.',
+    'Please fill in all fields.': 'Por favor completa todos los campos.', 'Passwords do not match.': 'Las contraseñas no coinciden.', 'Password must be at least 6 characters.': 'La contraseña debe tener al menos 6 caracteres.',
+    'This email is already registered.': 'Este correo ya se encuentra registrado.', 'Connected as:': 'Conectado como:', 'Current user': 'Usuario actual'
   };
   let language = localStorage.getItem('technoload-webapp-language') || 'en';
   const preserveWhitespace = (text, value) => text.replace(text.trim(), value);
