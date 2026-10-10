@@ -521,6 +521,7 @@ export class AppComponent {
       method: 'Sandbox'
     };
     this.payments.update(list => [record, ...list]);
+    localStorage.setItem('technoload-ts-payments', JSON.stringify(this.payments()));
     this.notice(approved ? 'Pago aprobado en sandbox. No se realizó ningún cobro.' : 'Pago rechazado en sandbox. No se realizó ningún cobro.');
   }
 
