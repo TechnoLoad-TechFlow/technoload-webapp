@@ -338,6 +338,12 @@ export class AppComponent {
     {id:'OP-31',route:'Lima → Ica',asset:'Volquete Volvo FMX',driver:'Marco López',status:'En ruta'},
     {id:'OP-32',route:'Callao → Ate',asset:'Camión Scania R450',driver:'Rosa Vargas',status:'Programado'}
   ]);
+  payments = signal<PaymentRecord[]>(this.read('payments', []));
+  paymentKind: PaymentKind = 'Alquiler';
+  paymentAssetId = seed[0].id;
+  rentalDays = 1;
+  damageDescription = '';
+  sandboxResult: 'approved' | 'rejected' = 'approved';
 
   // Auth & Session
   users = signal<User[]>(this.readUsers());
