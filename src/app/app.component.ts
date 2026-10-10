@@ -238,6 +238,55 @@ const defaultUsers: User[] = [
               </table>
             </section>
           </section>
+
+          <section *ngSwitchCase="'payments'">
+            <div class="head">
+              <div><h1>Pagos de vehículos</h1><p>Prueba cargos por alquiler, suscripción o reparación en el sandbox.</p></div>
+              <span class="sandbox-badge">● SANDBOX · SIN COBROS REALES</span>
+            </div>
+            <div class="payment-layout">
+              <section class="panel payment-form-panel">
+                <h2>Crear pago de prueba</h2>
+                <form class="payment-form" (ngSubmit)="simulatePayment()">
+                  <label>Tipo de cobro
+                    <select [(ngModel)]="paymentKind" (ngModelChange)="changePaymentKind($event)" name="paymentKind">
+                      <option value="Alquiler">Alquiler de vehículo</option>
+                      <option value="Suscripción">Suscripción de servicio</option>
+                      <option value="Daño">Reparación por daño</option>
+                    </select>
+                  </label>
+                  <label>Vehículo o servicio
+                    <select [(ngModel)]="paymentAssetId" name="paymentAssetId" required>
+                      <option *ngFor="let item of paymentCatalog()" [value]="item.id">{{item.name}}</option>
+                    </select>
+                  </label>
+                  <label *ngIf="paymentKind==='Alquiler'">Duración del alquiler
+                    <select [(ngModel)]="rentalDays" name="rentalDays">
+                      <option [ngValue]="1">1 día</option><option [ngValue]="3">3 días</option><option [ngValue]="7">7 días</option>
+                    </select>
+                  </label>
+                  <label *ngIf="paymentKind==='Daño'">Descripción del daño
+                    <input [(ngModel)]="damageDescription" name="damageDescription" required minlength="4" placeholder="Ej. Cambio de neumático">
+                  </label>
+                  <div class="payment-total"><span>Total de prueba</span><b>S/ {{paymentAmount() | number:'1.2-2'}}</b></div>
+                  <fieldset class="sandbox-choice"><legend>Resultado simulado</legend>
+                    <label><input type="radio" name="sandboxResult" value="approved" [(ngModel)]="sandboxResult"> Aprobar</label>
+                    <label><input type="radio" name="sandboxResult" value="rejected" [(ngModel)]="sandboxResult"> Rechazar</label>
+                  </fieldset>
+                  <button class="primary" type="submit">Procesar pago de prueba</button>
+                  <small class="payment-note">No ingreses datos bancarios. Esta demostración no se conecta a una pasarela ni mueve dinero.</small>
+                </form>
+              </section>
+              <section class="panel payment-history">
+                <h2>Historial de pagos</h2>
+                <div *ngIf="payments().length===0" class="empty">Aún no hay pagos. Crea uno para probar el flujo.</div>
+                <table *ngIf="payments().length">
+                  <thead><tr><th>Concepto</th><th>Tipo</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead>
+                  <tbody><tr *ngFor="let p of payments()"><td>{{p.description}}</td><td>{{p.kind}}</td><td>{{p.date}}</td><td>S/ {{p.amount | number:'1.2-2'}}</td><td><span class="payment-status" [class.rejected]="p.status==='Rechazado'">{{p.status}}</span></td></tr></tbody>
+                </table>
+              </section>
+            </div>
+          </section>
         </ng-container>
       </section>
     </main>
