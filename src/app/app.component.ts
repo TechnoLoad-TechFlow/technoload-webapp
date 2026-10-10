@@ -338,6 +338,12 @@ export class AppComponent {
     {id:'OP-31',route:'Lima → Ica',asset:'Volquete Volvo FMX',driver:'Marco López',status:'En ruta'},
     {id:'OP-32',route:'Callao → Ate',asset:'Camión Scania R450',driver:'Rosa Vargas',status:'Programado'}
   ]);
+  payments = signal<PaymentRecord[]>(this.read('payments', []));
+  paymentKind: PaymentKind = 'Alquiler';
+  paymentAssetId = seed[0].id;
+  rentalDays = 1;
+  damageDescription = '';
+  sandboxResult: 'approved' | 'rejected' = 'approved';
 
   // Auth & Session
   users = signal<User[]>(this.readUsers());
@@ -363,7 +369,22 @@ export class AppComponent {
 
   available = computed(() => this.assets().filter(a => a.status === 'AVAILABLE').length);
   activeOperations = computed(() => this.operations().filter(o => o.status === 'En ruta').length);
-  title = computed(() => ({dashboard:'Dashboard operativo',fleet:'Flota',maintenance:'Mantenimiento',operations:'Operaciones'}[this.view()]));
+  title = computed(() => ({dashboard:'Dashboard operativo',fleet:'Flota',maintenance:'Mantenimiento',operations:'Operaciones',payments:'Pagos sandbox'}[this.view()]));
+
+  paymentCatalog = computed(() => {
+    return this.paymentKind === 'Suscripción'
+        ? [{id:'subscription-basic', name:'Plan de gestión de flota', rate:149}]
+        : this.paymentKind === 'Daño'
+            ? this.assets().map(a => ({id:a.id, name:a.name, rate:280}))
+            : this.assets().map(a => ({id:a.id, name:a.name, rate:450}));
+
+  });
+
+  paymentAmount = computed(() => {
+    const item = this.paymentCatalog().find(entry => entry.id === this.paymentAssetId);
+    if (!item) return 0;
+    return this.paymentKind === 'Alquiler' ? item.rate * Number(this.rentalDays) : item.rate;
+  });
 
   userInitials = computed(() => {
     const name = this.session()?.user?.name || 'TL';
@@ -474,6 +495,39 @@ export class AppComponent {
 
   persist() {
     localStorage.setItem('technoload-ts-assets', JSON.stringify(this.assets()));
+  }
+
+  simulatePayment() {
+    const item = this.paymentCatalog().find(entry => entry.id === this.paymentAssetId);
+    if (!item || this.paymentAmount() <= 0) {
+      this.notice('Agrega un vehículo disponible para crear un pago.');
+      return;
+    }
+    const approved = this.sandboxResult === 'approved';
+    const description = this.paymentKind === 'Daño'
+        ? `${item.name} · ${this.damageDescription.trim()}`
+        : item.name;
+    if (this.paymentKind === 'Daño' && this.damageDescription.trim().length < 4) {
+      this.notice('Describe el daño (mínimo 4 caracteres).');
+      return;
+    }
+    const record: PaymentRecord = {
+      id: `PAY-${Date.now().toString().slice(-6)}`,
+      description,
+      kind: this.paymentKind,
+      amount: this.paymentAmount(),
+      date: new Date().toLocaleDateString('es-PE'),
+      status: approved ? 'Aprobado' : 'Rechazado',
+      method: 'Sandbox'
+    };
+    this.payments.update(list => [record, ...list]);
+    localStorage.setItem('technoload-ts-payments', JSON.stringify(this.payments()));
+    this.notice(approved ? 'Pago aprobado en sandbox. No se realizó ningún cobro.' : 'Pago rechazado en sandbox. No se realizó ningún cobro.');
+  }
+
+  changePaymentKind(kind: PaymentKind) {
+    this.paymentKind = kind;
+    this.paymentAssetId = kind === 'Suscripción' ? 'subscription-basic' : (this.assets()[0]?.id ?? '');
   }
 
   notice(message: string) {
