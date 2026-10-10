@@ -3,7 +3,10 @@ import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Asset, AssetStatus, AuthSession, User } from './models';
 
-type View = 'dashboard' | 'fleet' | 'maintenance' | 'operations';
+type View = 'dashboard' | 'fleet' | 'maintenance' | 'operations' | 'payments';
+type PaymentKind = 'Alquiler' | 'Suscripción' | 'Daño';
+type PaymentStatus = 'Aprobado' | 'Rechazado';
+interface PaymentRecord { id: string; description: string; kind: PaymentKind; amount: number; date: string; status: PaymentStatus; method: string; }
 const seed: Asset[] = [
   {id:'A-001',name:'Excavadora CAT 320',type:'Maquinaria',usage:1842,status:'AVAILABLE'},
   {id:'A-002',name:'Volquete Volvo FMX',type:'Volquete',usage:64500,status:'IN_OPERATION'},
