@@ -497,6 +497,38 @@ export class AppComponent {
     localStorage.setItem('technoload-ts-assets', JSON.stringify(this.assets()));
   }
 
+  simulatePayment() {
+    const item = this.paymentCatalog().find(entry => entry.id === this.paymentAssetId);
+    if (!item || this.paymentAmount() <= 0) {
+      this.notice('Agrega un vehículo disponible para crear un pago.');
+      return;
+    }
+    const approved = this.sandboxResult === 'approved';
+    const description = this.paymentKind === 'Daño'
+        ? `${item.name} · ${this.damageDescription.trim()}`
+        : item.name;
+    if (this.paymentKind === 'Daño' && this.damageDescription.trim().length < 4) {
+      this.notice('Describe el daño (mínimo 4 caracteres).');
+      return;
+    }
+    const record: PaymentRecord = {
+      id: `PAY-${Date.now().toString().slice(-6)}`,
+      description,
+      kind: this.paymentKind,
+      amount: this.paymentAmount(),
+      date: new Date().toLocaleDateString('es-PE'),
+      status: approved ? 'Aprobado' : 'Rechazado',
+      method: 'Sandbox'
+    };
+    this.payments.update(list => [record, ...list]);
+    this.notice(approved ? 'Pago aprobado en sandbox. No se realizó ningún cobro.' : 'Pago rechazado en sandbox. No se realizó ningún cobro.');
+  }
+
+  changePaymentKind(kind: PaymentKind) {
+    this.paymentKind = kind;
+    this.paymentAssetId = kind === 'Suscripción' ? 'subscription-basic' : (this.assets()[0]?.id ?? '');
+  }
+
   notice(message: string) {
     this.toast.set(message);
     setTimeout(() => this.toast.set(''), 2600);
