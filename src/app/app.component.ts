@@ -369,7 +369,22 @@ export class AppComponent {
 
   available = computed(() => this.assets().filter(a => a.status === 'AVAILABLE').length);
   activeOperations = computed(() => this.operations().filter(o => o.status === 'En ruta').length);
-  title = computed(() => ({dashboard:'Dashboard operativo',fleet:'Flota',maintenance:'Mantenimiento',operations:'Operaciones'}[this.view()]));
+  title = computed(() => ({dashboard:'Dashboard operativo',fleet:'Flota',maintenance:'Mantenimiento',operations:'Operaciones',payments:'Pagos sandbox'}[this.view()]));
+
+  paymentCatalog = computed(() => {
+    return this.paymentKind === 'Suscripción'
+        ? [{id:'subscription-basic', name:'Plan de gestión de flota', rate:149}]
+        : this.paymentKind === 'Daño'
+            ? this.assets().map(a => ({id:a.id, name:a.name, rate:280}))
+            : this.assets().map(a => ({id:a.id, name:a.name, rate:450}));
+
+  });
+
+  paymentAmount = computed(() => {
+    const item = this.paymentCatalog().find(entry => entry.id === this.paymentAssetId);
+    if (!item) return 0;
+    return this.paymentKind === 'Alquiler' ? item.rate * Number(this.rentalDays) : item.rate;
+  });
 
   userInitials = computed(() => {
     const name = this.session()?.user?.name || 'TL';
