@@ -37,3 +37,21 @@
 .logout-btn:hover{background:#fdecec;border-color:#e49b9b;color:#b73535}
 .side-user{margin-top:14px;padding:11px 10px;background:#172635;border-radius:8px;font-size:.76rem;color:#a4b6c6;line-height:1.4}
 .side-user b{color:#ffffff}
+.sandbox-badge{display:inline-flex;align-items:center;gap:7px;background:#fff4e4;color:#9a5700;border:1px solid #f2d7ad;border-radius:999px;padding:8px 12px;font-size:.73rem;font-weight:800;letter-spacing:.03em}
+.payment-layout{display:grid;grid-template-columns:minmax(280px,390px) minmax(0,1fr);gap:18px;align-items:start}
+.payment-form-panel h2,.payment-history h2{padding:18px 20px;border-bottom:1px solid var(--line)}
+.payment-form{padding:20px;display:grid;gap:15px}
+.payment-form>label{display:grid;gap:6px;font-size:.82rem;font-weight:700;color:#354b5e}
+.payment-form input:not([type=radio]),.payment-form select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;color:#162b3e}
+.payment-form input:focus,.payment-form select:focus{outline:0;border-color:var(--orange);box-shadow:0 0 0 3px #ff8f0026}
+.payment-total{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f5f8fb;border-radius:9px;color:var(--muted);font-size:.88rem}
+.payment-total b{font-size:1.35rem;color:var(--navy)}
+.sandbox-choice{display:flex;gap:16px;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.83rem}
+.sandbox-choice legend{padding:0 5px;font-size:.8rem;font-weight:700;color:#354b5e}
+.sandbox-choice label{display:flex;gap:6px;align-items:center}
+.payment-note{color:var(--muted);line-height:1.5}
+.payment-history{min-width:0}
+.payment-history table{min-width:550px}
+.payment-status{display:inline-block;padding:5px 9px;border-radius:99px;background:#e5f6ea;color:var(--green);font-size:.72rem;font-weight:800}
+.payment-status.rejected{background:#fce9e9;color:var(--red)}
+@media(max-width:1000px){.payment-layout{grid-template-columns:1fr}.payment-history{overflow:auto}}

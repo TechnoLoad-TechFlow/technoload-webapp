@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1f826cec-d56c-4b89-824d-001c6f06a962" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "NicolasTantalean"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/TechnoLoad-TechFlow/technoload-webapp.git",
+    "accountId": "ca0255dd-e420-4091-8c01-2374e89d8c80"
+  }
+}]]></component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.2966211096860523" />
+      <entry key="MS500" value="2.6882093491057963" />
+      <entry key="S2" value="5.8999019693983445" />
+      <entry key="S5" value="10.572774316045418" />
+      <entry key="S10" value="14.630579319025761" />
+      <entry key="S30" value="19.44416977125473" />
+      <entry key="S60" value="21.109387572249222" />
+      <entry key="M2" value="22.435585143946888" />
+      <entry key="M5" value="26.953454020688337" />
+      <entry key="M10" value="32.68204768774949" />
+      <entry key="M15" value="35.92480944783082" />
+      <entry key="M30" value="40.23795532493483" />
+      <entry key="H1" value="42.909277883152185" />
+      <entry key="H2" value="44.398127864969155" />
+      <entry key="H4" value="45.18438930872789" />
+      <entry key="D1" value="45.861978540785785" />
+      <entry key="W1" value="45.98023091358717" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.2417703746942799" />
+      <entry key="MS500" value="2.669190738115307" />
+      <entry key="S2" value="5.833181385902949" />
+      <entry key="S5" value="10.433554946894771" />
+      <entry key="S10" value="14.505442645071655" />
+      <entry key="S30" value="19.382001283285824" />
+      <entry key="S60" value="21.075005259928208" />
+      <entry key="M2" value="22.417465802408287" />
+      <entry key="M5" value="26.945831448523393" />
+      <entry key="M10" value="32.67808633632004" />
+      <entry key="M15" value="35.92211608753613" />
+      <entry key="M30" value="40.23657457926687" />
+      <entry key="H1" value="42.908577087579886" />
+      <entry key="H2" value="44.39777457550214" />
+      <entry key="H4" value="45.18421190185674" />
+      <entry key="D1" value="45.861948863618196" />
+      <entry key="W1" value="45.98022667126678" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3KU7G6KVPkvO0fQQ7qHVfHQb2oo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "javascript.preferred.runtime.type.id": "node",
+    "last_opened_file_path": "C:/Users/nicol/Downloads/technoload-webapp-main/technoload-webapp-main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.Angular CLI Server.executor": "Run",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "ts.external.directory.path": "C:\\Users\\nicol\\Downloads\\technoload-webapp-main\\technoload-webapp-main\\node_modules\\typescript\\lib"
+  }
+}]]></component>
+  <component name="RunManager" selected="npm.Angular CLI Server">
+    <configuration name="Angular Application" type="JavascriptDebugType" uri="http://localhost:4200">
+      <method v="2" />
+    </configuration>
+    <configuration name="Angular CLI Server" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-WS-262.10315.144" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1f826cec-d56c-4b89-824d-001c6f06a962" name="Changes" comment="" />
+      <created>1791600194161</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1791600194161</updated>
+      <workItem from="1791600195179" duration="1116000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
