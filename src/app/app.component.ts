@@ -324,7 +324,8 @@ export class AppComponent {
     {id:'dashboard',icon:'▦',label:'Dashboard'},
     {id:'fleet',icon:'🚜',label:'Flota'},
     {id:'maintenance',icon:'⚒',label:'Mantenimiento'},
-    {id:'operations',icon:'⌖',label:'Operaciones'}
+    {id:'operations',icon:'⌖',label:'Operaciones'},
+    {id:'payments',icon:'S/',label:'Pagos (sandbox)'}
   ];
 
   view = signal<View>('dashboard');
